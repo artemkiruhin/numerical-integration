@@ -24,7 +24,39 @@
     </div>
 
     <script src="_framework/blazor.webview.js" autostart="false"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        let chart;
 
+        window.updateChart = (points) => {
+            const ctx = document.getElementById('chartContainer').getContext('2d');
+
+            if (chart) {
+                chart.destroy();
+            }
+
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: 'f(x) = (x² + 1)sin(x - 0.5)',
+                        data: points.map(p => ({ x: p.x, y: p.y })),
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        };
+    </script>
 </body>
 
 </html>

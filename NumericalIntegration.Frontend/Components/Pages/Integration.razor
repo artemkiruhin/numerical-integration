@@ -1,0 +1,131 @@
+﻿@page "/integration"
+@using NumericalIntegration.Core
+@inject IJSRuntime JS
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Integration Calculator</h3>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <p class="lead">f(x) = (x² + 1)sin(x - 0.5)</p>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="lowerBound">Lower bound (a):</label>
+                                <input type="number" class="form-control" id="lowerBound" 
+                                       @bind="lowerBound" step="0.1" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="upperBound">Upper bound (b):</label>
+                                <input type="number" class="form-control" id="upperBound" 
+                                       @bind="upperBound" step="0.1" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <button class="btn btn-primary" @onclick="Calculate">Calculate</button>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            @errorMessage
+                        </div>
+                    }
+
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5>Trapezoidal Rule Result</h5>
+                                </div>
+                                <div class="card-body">
+                                    <h3 class="text-primary">@trapezoidalResult?.ToString("F6")</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5>Simpson's Rule Result</h5>
+                                </div>
+                                <div class="card-body">
+                                    <h3 class="text-primary">@simpsonsResult?.ToString("F6")</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <div id="chartContainer" style="height: 400px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private double lowerBound = 0.5;
+    private double upperBound = 1.5;
+    private double? trapezoidalResult;
+    private double? simpsonsResult;
+    private string errorMessage = "";
+
+    private async Task Calculate()
+    {
+        errorMessage = "";
+
+        if (upperBound <= lowerBound)
+        {
+            errorMessage = "Upper bound must be greater than lower bound";
+            return;
+        }
+
+        var calculator = new NewtonCotesCalculator(x => (Math.Pow(x, 2) + 1) * Math.Sin(x - 0.5));
+        
+        trapezoidalResult = calculator.TrapezoidalRule(lowerBound, upperBound);
+        simpsonsResult = calculator.SimpsonsRule(lowerBound, upperBound);
+
+        await UpdateChart();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Calculate();
+        }
+    }
+
+    private async Task UpdateChart()
+    {
+        var points = new List<Point>();
+        var steps = 100;
+        var dx = (upperBound - lowerBound) / steps;
+
+        for (int i = 0; i <= steps; i++)
+        {
+            var x = lowerBound + i * dx;
+            var y = (Math.Pow(x, 2) + 1) * Math.Sin(x - 0.5);
+            points.Add(new Point { X = x, Y = y });
+        }
+
+        await JS.InvokeVoidAsync("updateChart", points);
+    }
+
+    private class Point
+    {
+        public double X { get; set; }
+        public double Y { get; set; }
+    }
+}
