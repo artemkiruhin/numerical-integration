@@ -1,0 +1,78 @@
+﻿@page "/integration"
+@using NumericalIntegration.Core
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0">Калькулятор численного интегрирования</h2>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label for="lowerBound" class="form-label">Нижний предел (a):</label>
+                        <input type="number" class="form-control" id="lowerBound" @bind="LowerBound" step="0.1" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label for="upperBound" class="form-label">Верхний предел (b):</label>
+                        <input type="number" class="form-control" id="upperBound" @bind="UpperBound" step="0.1" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mb-4">
+                <div class="alert alert-info">
+                    Функция: f(x) = (x² + 1)sin(x - 0.5)
+                </div>
+            </div>
+
+            <div class="d-grid">
+                <button class="btn btn-primary mb-3" @onclick="Calculate">
+                    Вычислить
+                </button>
+            </div>
+
+            @if (showResults)
+            {
+                <div class="alert alert-success">
+                    <h4 class="alert-heading">Результаты:</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Метод трапеций:</strong></p>
+                            <p>@TrapezoidalResult.ToString("F6")</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Метод Симпсона:</strong></p>
+                            <p>@SimpsonsResult.ToString("F6")</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private double LowerBound { get; set; }
+    private double UpperBound { get; set; }
+    private double TrapezoidalResult { get; set; }
+    private double SimpsonsResult { get; set; }
+    private bool showResults = false;
+
+    private double Function(double x)
+    {
+        return (Math.Pow(x, 2) + 1) * Math.Sin(x - 0.5);
+    }
+
+    private void Calculate()
+    {
+        var calculator = new NewtonCotesCalculator(Function);
+        
+        TrapezoidalResult = calculator.TrapezoidalRule(LowerBound, UpperBound);
+        SimpsonsResult = calculator.SimpsonsRule(LowerBound, UpperBound);
+        
+        showResults = true;
+    }
+}
