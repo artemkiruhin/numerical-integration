@@ -4,3 +4,14 @@
         <FocusOnNavigate RouteData="@routeData" Selector="h1"/>
     </Found>
 </Router>
+
+@code {
+
+    [Inject] NavigationManager NavigationManager { get; set; }
+
+    protected override void OnInitialized()
+    {
+        NavigationManager.NavigateTo("/integration");
+    }
+
+}
