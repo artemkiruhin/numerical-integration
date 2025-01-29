@@ -6,7 +6,7 @@ public class NewtonCotesCalculator
 
     public NewtonCotesCalculator(Func<double, double> function)
     {
-        _function = function;
+        _function = function ?? throw new ArgumentNullException(nameof(function));
     }
 
     private double Function(double x) => _function(x);
@@ -19,11 +19,11 @@ public class NewtonCotesCalculator
     
     public double SimpsonsRule(double a, double b)
     {
-        var h = (b - a) / 2;
+        var h = (b - a) / 6;  
         var x0 = a;
-        var x1 = a + h;
+        var x1 = (a + b) / 2; 
         var x2 = b;
-        return (h / 3) * (Function(x0) + 4 * Function(x1) + Function(x2));
+        return h * (Function(x0) + 4 * Function(x1) + Function(x2));
     }
     
     public static double TrapezoidalRule(Func<double, double> function , double a, double b)
@@ -32,12 +32,12 @@ public class NewtonCotesCalculator
         return (h / 2) * (function(a) + function(b));
     }
     
-    public static  double SimpsonsRule(Func<double, double> function , double a, double b)
+    public static double SimpsonsRule(Func<double, double> function, double a, double b)
     {
-        var h = (b - a) / 2;
+        var h = (b - a) / 6;
         var x0 = a;
-        var x1 = a + h;
+        var x1 = (a + b) / 2;
         var x2 = b;
-        return (h / 3) * (function(x0) + 4 * function(x1) + function(x2));
+        return h * (function(x0) + 4 * function(x1) + function(x2));
     }
 }
