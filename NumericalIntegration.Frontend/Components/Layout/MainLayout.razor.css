@@ -75,3 +75,65 @@ main {
         padding-right: 1.5rem !important;
     }
 }
+
+
+.page {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+}
+
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+}
+
+main {
+    flex: 1;
+    padding: 20px;
+}
+
+.top-row {
+    background-color: rgba(0,0,0,0.1);
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    justify-content: flex-start;
+    height: 3.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.navbar-brand {
+    font-size: 1.1rem;
+    padding-left: 15px;
+}
+
+.nav-item {
+    font-size: 0.9rem;
+    padding-bottom: 0.5rem;
+}
+
+.nav-link {
+    color: rgba(255,255,255,0.8);
+    background: none;
+    border: none;
+    border-radius: 4px;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    line-height: 3rem;
+    padding: 0 1rem;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.nav-link:hover {
+    color: white;
+    background-color: rgba(255,255,255,0.1);
+}
+
+.nav-link.active {
+    color: white;
+    background-color: rgba(255,255,255,0.25);
+}
