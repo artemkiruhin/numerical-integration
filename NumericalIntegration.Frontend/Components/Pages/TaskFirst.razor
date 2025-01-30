@@ -1,0 +1,67 @@
+﻿@page "/task1"
+@using NumericalIntegration.Core
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0">Задание 1: Численное интегрирование</h2>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-info">
+                <h4>Данные задачи:</h4>
+                <p>Функция: f(x) = (x² + 1)sin(x - 0.5)</p>
+                <p>Пределы интегрирования:</p>
+                <ul>
+                    <li>Нижний предел (a) = 0.5</li>
+                    <li>Верхний предел (b) = 1.5</li>
+                </ul>
+            </div>
+
+            <div class="d-grid">
+                <button class="btn btn-primary mb-3" @onclick="Calculate">
+                    Вычислить интеграл
+                </button>
+            </div>
+
+            @if (showResults)
+            {
+                <div class="alert alert-success">
+                    <h4 class="alert-heading">Результаты вычисления:</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Метод трапеций:</strong></p>
+                            <p>@TrapezoidalResult.ToString("F6")</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Метод Симпсона:</strong></p>
+                            <p>@SimpsonsResult.ToString("F6")</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private const double LowerBound = 0.5;
+    private const double UpperBound = 1.5;
+    private double TrapezoidalResult { get; set; }
+    private double SimpsonsResult { get; set; }
+    private bool showResults = false;
+
+    private double Function(double x)
+    {
+        return (Math.Pow(x, 2) + 1) * Math.Sin(x - 0.5);
+    }
+
+    private void Calculate()
+    {
+        var calculator = new NewtonCotesCalculator(Function);
+        
+        TrapezoidalResult = calculator.TrapezoidalRule(LowerBound, UpperBound);
+        SimpsonsResult = calculator.SimpsonsRule(LowerBound, UpperBound);
+        
+        showResults = true;
+    }
+}
