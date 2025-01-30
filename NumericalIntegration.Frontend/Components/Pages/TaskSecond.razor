@@ -1,0 +1,115 @@
+﻿@page "/task2"
+@using NumericalIntegration.Core
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0">Задание 2: Численное интегрирование с оценкой погрешности</h2>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-info">
+                <h4>Данные задачи:</h4>
+                <p>Функция: f(x) = (x² + 1)sin(x - 0.5)</p>
+                <p>Пределы интегрирования:</p>
+                <ul>
+                    <li>Нижний предел (a) = 0.5</li>
+                    <li>Верхний предел (b) = 1.5</li>
+                </ul>
+            </div>
+
+            <div class="d-grid">
+                <button class="btn btn-primary mb-3" @onclick="Calculate">
+                    Вычислить интеграл и погрешность
+                </button>
+            </div>
+
+            @if (_showResults)
+            {
+                <div class="alert alert-success">
+                    <h4 class="alert-heading">Результаты вычисления:</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Метод трапеций:</h5>
+                            <p>Значение интеграла: @TrapezoidalResult.ToString("F6")</p>
+                            <p>Теоретическая погрешность: @TrapezoidalError.ToString("E3")</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Метод Симпсона:</h5>
+                            <p>Значение интеграла: @SimpsonsResult.ToString("F6")</p>
+                            <p>Теоретическая погрешность: @SimpsonsError.ToString("E3")</p>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <h5>Сравнение методов:</h5>
+                        <p>Абсолютная разница между методами: @MethodsDifference.ToString("E3")</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private const double LowerBound = 0.5;
+    private const double UpperBound = 1.5;
+    private double TrapezoidalResult { get; set; }
+    private double SimpsonsResult { get; set; }
+    private double TrapezoidalError { get; set; }
+    private double SimpsonsError { get; set; }
+    private double MethodsDifference { get; set; }
+    private bool _showResults = false;
+
+    private double Function(double x)
+    {
+        return (Math.Pow(x, 2) + 1) * Math.Sin(x - 0.5);
+    }
+
+    private double CalculateSecondDerivative(double x)
+    {
+        // Приближенное вычисление второй производной
+        double h = 0.0001;
+        double fxPlusH = Function(x + h);
+        double fx = Function(x);
+        double fxMinusH = Function(x - h);
+        return (fxPlusH - 2 * fx + fxMinusH) / (h * h);
+    }
+
+    private double CalculateFourthDerivative(double x)
+    {
+        // Приближенное вычисление четвертой производной
+        double h = 0.0001;
+        double d2fxPlusH = CalculateSecondDerivative(x + h);
+        double d2fx = CalculateSecondDerivative(x);
+        double d2fxMinusH = CalculateSecondDerivative(x - h);
+        return (d2fxPlusH - 2 * d2fx + d2fxMinusH) / (h * h);
+    }
+
+    private void Calculate()
+    {
+        var calculator = new NewtonCotesCalculator(Function);
+        
+        TrapezoidalResult = calculator.TrapezoidalRule(LowerBound, UpperBound);
+        SimpsonsResult = calculator.SimpsonsRule(LowerBound, UpperBound);
+        
+        // Вычисление теоретической погрешности
+        double h = UpperBound - LowerBound;
+        double maxSecondDerivative = 0;
+        double maxFourthDerivative = 0;
+        
+        // Находим максимальные значения производных на интервале
+        for (double x = LowerBound; x <= UpperBound; x += 0.01)
+        {
+            maxSecondDerivative = Math.Max(maxSecondDerivative, Math.Abs(CalculateSecondDerivative(x)));
+            maxFourthDerivative = Math.Max(maxFourthDerivative, Math.Abs(CalculateFourthDerivative(x)));
+        }
+        
+        // Вычисляем погрешности
+        TrapezoidalError = (Math.Pow(h, 3) / 12) * maxSecondDerivative;
+        SimpsonsError = (Math.Pow(h, 5) / 90) * maxFourthDerivative;
+        
+        // Вычисляем разницу между методами
+        MethodsDifference = Math.Abs(TrapezoidalResult - SimpsonsResult);
+        
+        _showResults = true;
+    }
+}
