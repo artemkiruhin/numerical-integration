@@ -1,0 +1,106 @@
+﻿@page "/integration-comparison"
+@using NumericalIntegration.Core
+@inject IntegrationAnalyzer Analyzer
+
+<div class="container mt-4">
+    <h1 class="mb-4">Сравнение методов численного интегрирования</h1>
+
+    @if (_trapezoidalResult != null && _simpsonResult != null)
+    {
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="card-title mb-0">@_trapezoidalResult.MethodName</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">
+                                <strong>Среднеквадратичная ошибка:</strong>
+                                <span class="badge bg-info">@_trapezoidalResult.MSE.ToString("E10")</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="card-title mb-0">@_simpsonResult.MethodName</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">
+                                <strong>Среднеквадратичная ошибка:</strong>
+                                <span class="badge bg-info">@_simpsonResult.MSE.ToString("E10")</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <h2>Детальные результаты</h2>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Функция</th>
+                                <th>Точное значение</th>
+                                <th>Метод трапеций</th>
+                                <th>Ошибка²</th>
+                                <th>Метод Симпсона</th>
+                                <th>Ошибка²</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @for (int i = 0; i < _trapezoidalResult.TestResults.Count; i++)
+                        {
+                            var trap = _trapezoidalResult.TestResults[i];
+                            var simp = _simpsonResult.TestResults[i];
+                                    <tr>
+                                        <td>@trap.FunctionName</td>
+                                        <td>@trap.ExactValue.ToString("F10")</td>
+                                        <td>@trap.CalculatedValue.ToString("F10")</td>
+                                        <td>@trap.SquaredError.ToString("E10")</td>
+                                        <td>@simp.CalculatedValue.ToString("F10")</td>
+                                        <td>@simp.SquaredError.ToString("E10")</td>
+                                    </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="mt-4 mb-4">
+                <div class="alert @(_simpsonResult.MSE < _trapezoidalResult.MSE ? "alert-success" : "alert-primary")">
+                    <h4 class="alert-heading">Вывод</h4>
+                    <p>
+                    @{
+                        var betterMethod = _simpsonResult.MSE < _trapezoidalResult.MSE ? "Метод Симпсона" : "Метод трапеций";
+                        var improvement = Math.Abs((_trapezoidalResult.MSE - _simpsonResult.MSE) /
+                            Math.Max(_trapezoidalResult.MSE, _simpsonResult.MSE) * 100);
+                    }
+                        <strong>@betterMethod</strong> показал лучшую точность.
+                        Улучшение точности составило <strong>@improvement.ToString("F2")%</strong>.
+                    </p>
+                </div>
+            </div>
+    }
+    else
+    {
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Загрузка...</span>
+            </div>
+    }
+</div>
+
+@code {
+    private IntegrationAnalyzer.AnalysisResult? _trapezoidalResult;
+    private IntegrationAnalyzer.AnalysisResult? _simpsonResult;
+
+    protected override void OnInitialized()
+    {
+        var results = Analyzer.AnalyzeMethods();
+        _trapezoidalResult = results.Trapezoidal;
+        _simpsonResult = results.Simpson;
+    }
+}
