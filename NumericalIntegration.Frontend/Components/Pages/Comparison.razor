@@ -1,6 +1,6 @@
 ﻿@page "/integration-comparison"
 @using NumericalIntegration.Core
-@inject IntegrationAnalyzer Analyzer
+@inject IntegrationLeastSquaresAnalyzer Analyzer
 
 <div class="container mt-4">
     <h1 class="mb-4">Сравнение методов численного интегрирования</h1>
@@ -94,8 +94,8 @@
 </div>
 
 @code {
-    private IntegrationAnalyzer.AnalysisResult? _trapezoidalResult;
-    private IntegrationAnalyzer.AnalysisResult? _simpsonResult;
+    private IntegrationLeastSquaresAnalyzer.AnalysisResult? _trapezoidalResult;
+    private IntegrationLeastSquaresAnalyzer.AnalysisResult? _simpsonResult;
 
     protected override void OnInitialized()
     {
