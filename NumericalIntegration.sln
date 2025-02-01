@@ -1,5 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35527.113 d17.12
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NumericalIntegration.Core", "NumericalIntegration.Core\NumericalIntegration.Core.csproj", "{47232C5F-E264-4BF5-9C2B-B233A487FE6D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NumericalIntegration.Tests", "NumericalIntegration.Tests\NumericalIntegration.Tests.csproj", "{C568EDD6-34A6-446B-973A-41D54B93CE22}"
@@ -24,5 +27,8 @@ Global
 		{4772F7F5-A022-4591-93D0-0C3B2B5EBC1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4772F7F5-A022-4591-93D0-0C3B2B5EBC1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4772F7F5-A022-4591-93D0-0C3B2B5EBC1D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal

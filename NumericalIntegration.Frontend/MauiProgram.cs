@@ -3,6 +3,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Maui.Controls.Hosting;
 using Microsoft.Maui.Hosting;
 
+using NumericalIntegration.Core;
+
 namespace NumericalIntegration.Frontend;
 
 public static class MauiProgram
@@ -15,6 +17,7 @@ public static class MauiProgram
             .ConfigureFonts(fonts => { fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular"); });
 
         builder.Services.AddMauiBlazorWebView();
+        builder.Services.AddSingleton<IntegrationAnalyzer>();
 
 #if DEBUG
         builder.Services.AddBlazorWebViewDeveloperTools();
