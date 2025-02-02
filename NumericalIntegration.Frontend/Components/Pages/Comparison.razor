@@ -3,12 +3,12 @@
 @inject IntegrationLeastSquaresAnalyzer Analyzer
 
 <div class="container mt-4">
-    <h1 class="mb-4">Сравнение методов численного интегрирования</h1>
+    <h1 class="mb-4">Сравнение численных методов</h1>
 
-    @if (_trapezoidalResult != null && _simpsonResult != null)
+    @if (_trapezoidalResult != null && _simpsonResult != null && _gaussResults != null)
     {
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="card">
                         <div class="card-header bg-primary text-white">
                             <h5 class="card-title mb-0">@_trapezoidalResult.MethodName</h5>
@@ -22,7 +22,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="card">
                         <div class="card-header bg-success text-white">
                             <h5 class="card-title mb-0">@_simpsonResult.MethodName</h5>
@@ -35,10 +35,24 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header bg-warning text-dark">
+                            <h5 class="card-title mb-0">Метод Гаусса</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">
+                                <strong>Средняя ошибка:</strong>
+                                <span class="badge bg-info">@(_gaussResults.Average(r => r.Error).ToString("E10"))</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="mt-4">
-                <h2>Детальные результаты</h2>
+                <h2>Результаты интегрирования</h2>
                 <div class="table-responsive">
                     <table class="table table-striped table-hover">
                         <thead>
@@ -56,14 +70,41 @@
                         {
                             var trap = _trapezoidalResult.TestResults[i];
                             var simp = _simpsonResult.TestResults[i];
-                                    <tr>
-                                        <td>@trap.FunctionName</td>
-                                        <td>@trap.ExactValue.ToString("F10")</td>
-                                        <td>@trap.CalculatedValue.ToString("F10")</td>
-                                        <td>@trap.SquaredError.ToString("E10")</td>
-                                        <td>@simp.CalculatedValue.ToString("F10")</td>
-                                        <td>@simp.SquaredError.ToString("E10")</td>
-                                    </tr>
+                                <tr>
+                                    <td>@trap.FunctionName</td>
+                                    <td>@trap.ExactValue.ToString("F10")</td>
+                                    <td>@trap.CalculatedValue.ToString("F10")</td>
+                                    <td>@trap.SquaredError.ToString("E10")</td>
+                                    <td>@simp.CalculatedValue.ToString("F10")</td>
+                                    <td>@simp.SquaredError.ToString("E10")</td>
+                                </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <h2>Результаты решения СЛАУ</h2>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Тест</th>
+                                <th>Точное решение</th>
+                                <th>Вычисленное решение</th>
+                                <th>Ошибка</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var result in _gaussResults)
+                        {
+                                <tr>
+                                    <td>@result.TestName</td>
+                                    <td>@string.Join(", ", result.ExactSolution.Select(x => x.ToString("F6")))</td>
+                                    <td>@string.Join(", ", result.CalculatedSolution.Select(x => x.ToString("F6")))</td>
+                                    <td>@result.Error.ToString("E10")</td>
+                                </tr>
                         }
                         </tbody>
                     </table>
@@ -72,15 +113,20 @@
 
             <div class="mt-4 mb-4">
                 <div class="alert @(_simpsonResult.MSE < _trapezoidalResult.MSE ? "alert-success" : "alert-primary")">
-                    <h4 class="alert-heading">Вывод</h4>
+                    <h4 class="alert-heading">Выводы</h4>
+                @{
+                    var betterMethod = _simpsonResult.MSE < _trapezoidalResult.MSE ? "Метод Симпсона" : "Метод трапеций";
+                    var improvement = Math.Abs((_trapezoidalResult.MSE - _simpsonResult.MSE) /
+                        Math.Max(_trapezoidalResult.MSE, _simpsonResult.MSE) * 100);
+                    var gaussAvgError = _gaussResults.Average(r => r.Error);
+                }
                     <p>
-                    @{
-                        var betterMethod = _simpsonResult.MSE < _trapezoidalResult.MSE ? "Метод Симпсона" : "Метод трапеций";
-                        var improvement = Math.Abs((_trapezoidalResult.MSE - _simpsonResult.MSE) /
-                            Math.Max(_trapezoidalResult.MSE, _simpsonResult.MSE) * 100);
-                    }
-                        <strong>@betterMethod</strong> показал лучшую точность.
+                        <strong>Интегрирование:</strong> @betterMethod показал лучшую точность.
                         Улучшение точности составило <strong>@improvement.ToString("F2")%</strong>.
+                    </p>
+                    <p>
+                        <strong>Метод Гаусса:</strong> Средняя ошибка при решении СЛАУ составила
+                        <strong>@gaussAvgError.ToString("E10")</strong>.
                     </p>
                 </div>
             </div>
@@ -96,11 +142,13 @@
 @code {
     private IntegrationLeastSquaresAnalyzer.AnalysisResult? _trapezoidalResult;
     private IntegrationLeastSquaresAnalyzer.AnalysisResult? _simpsonResult;
+    private List<IntegrationLeastSquaresAnalyzer.LinearSystemResult>? _gaussResults;
 
     protected override void OnInitialized()
     {
-        var results = Analyzer.AnalyzeMethods();
+        var results = Analyzer.AnalyzeAllMethods();
         _trapezoidalResult = results.Trapezoidal;
         _simpsonResult = results.Simpson;
+        _gaussResults = results.GaussResults;
     }
 }
