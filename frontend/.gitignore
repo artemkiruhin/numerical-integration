@@ -1,11 +1,3 @@
-bin/
-obj/
-.idea/
-/.vs
-/NumericalIntegration.sln.DotSettings.user
-/NumericalIntegration.Frontend/NumericalIntegration.Frontend.csproj.user
-
-
 # Logs
 logs
 *.log
@@ -36,4 +28,3 @@ coverage
 *.sw?
 
 *.tsbuildinfo
-
