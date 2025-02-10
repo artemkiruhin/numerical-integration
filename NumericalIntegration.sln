@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NumericalIntegration.Tests"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NumericalIntegration.Frontend", "NumericalIntegration.Frontend\NumericalIntegration.Frontend.csproj", "{4772F7F5-A022-4591-93D0-0C3B2B5EBC1D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NumericalIntegration.Api", "NumericalIntegration.Api\NumericalIntegration.Api.csproj", "{1EB1357E-A720-4D64-8643-F8764625D0DF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{4772F7F5-A022-4591-93D0-0C3B2B5EBC1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4772F7F5-A022-4591-93D0-0C3B2B5EBC1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4772F7F5-A022-4591-93D0-0C3B2B5EBC1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1EB1357E-A720-4D64-8643-F8764625D0DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1EB1357E-A720-4D64-8643-F8764625D0DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1EB1357E-A720-4D64-8643-F8764625D0DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1EB1357E-A720-4D64-8643-F8764625D0DF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
